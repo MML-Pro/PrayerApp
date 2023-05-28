@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/prayerTimesFragment">
+
+    <fragment
+        android:id="@+id/prayerTimesFragment"
+        android:name="com.example.prayerapp.ui.PrayerTimesFragment"
+        android:label="fragment_prayer_times"
+        tools:layout="@layout/fragment_prayer_times" >
+        <action
+            android:id="@+id/action_prayerTimesFragment_to_qiblaDirectionFragment"
+            app:destination="@id/qiblaDirectionFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/qiblaDirectionFragment"
+        android:name="com.example.prayerapp.ui.QiblaDirectionFragment"
+        android:label="fragment_qibla_direction"
+        tools:layout="@layout/fragment_qibla_direction" />
+</navigation>
