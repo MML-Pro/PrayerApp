@@ -131,10 +131,16 @@ class QiblaDirectionFragment : Fragment(), OnMapReadyCallback, SensorEventListen
     }
 
 
-    override fun onSensorChanged(event: SensorEvent?) {
 
-        if (event?.sensor?.type == Sensor.TYPE_ORIENTATION) {
-            val azimuth = event.values[0]
+    override fun onSensorChanged(event: SensorEvent?) {
+        if (event?.sensor?.type == Sensor.TYPE_ROTATION_VECTOR) {
+            val rotationMatrix = FloatArray(9)
+            SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values)
+
+            val orientation = FloatArray(3)
+            SensorManager.getOrientation(rotationMatrix, orientation)
+
+            val azimuth = Math.toDegrees(orientation[0].toDouble()).toFloat()
             rotateCompass(azimuth)
         }
     }
