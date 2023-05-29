@@ -28,20 +28,19 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.prayerapp.databinding.FragmentPrayerTimesBinding
-import com.example.prayerapp.domain.models.Data
 import com.example.prayerapp.utils.NetworkHelper
 import com.example.prayerapp.utils.Resource
 import com.example.prayerapp.viewmodels.PrayerTimesViewModel
-import com.google.android.gms.location.LocationCallback
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+
 
 private const val TAG = "PrayerTimesFragment"
 
@@ -58,7 +57,6 @@ class PrayerTimesFragment : Fragment() {
     private var latitude = 31.2772984
     private var longitude = 30.0087258
 
-    private var locationCallback: LocationCallback? = null
     private lateinit var locationManager: LocationManager
 
     private lateinit var calendar:Calendar
@@ -76,7 +74,7 @@ class PrayerTimesFragment : Fragment() {
             if(NetworkHelper.hasInternetConnection(requireContext())) {
 
                 viewModel.getPrayersTimingsFromRemote(
-                    calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                    calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1,
                     latitude, longitude
                 )
             }else {
@@ -159,23 +157,30 @@ class PrayerTimesFragment : Fragment() {
             calendar.get(Calendar.DAY_OF_MONTH)
         ) { view, year, monthOfYear, dayOfMonth ->
 
+            this.dayOfMonth = dayOfMonth
+
+            Log.d(TAG, "onViewCreated: calender test 02 $monthOfYear")
+
+
             if(NetworkHelper.hasInternetConnection(requireContext())) {
 
                 viewModel.getPrayersTimingsFromRemote(
-                    calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                    year, monthOfYear+1,
                     latitude, longitude
                 )
             }else {
                 viewModel.getPrayersTimingsFromDB()
             }
 
-            this.dayOfMonth = dayOfMonth
+
         }
 
         if(NetworkHelper.hasInternetConnection(requireContext())) {
 
+            Log.d(TAG, "onViewCreated: calender test ${calendar.get(Calendar.MONTH)}")
+
             viewModel.getPrayersTimingsFromRemote(
-                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
+                calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH)+1,
                 latitude, longitude
             )
         }else {
@@ -188,7 +193,15 @@ class PrayerTimesFragment : Fragment() {
             adapter = this@PrayerTimesFragment.adapter
             layoutManager =
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+
+            val dividerItemDecoration = DividerItemDecoration(
+                this.context,
+                (layoutManager as LinearLayoutManager).orientation
+            )
+            addItemDecoration(dividerItemDecoration)
         }
+
+
 
         lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
